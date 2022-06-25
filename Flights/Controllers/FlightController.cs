@@ -6,6 +6,7 @@ namespace Flights.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    
     public class FlightController : ControllerBase
     {
        
@@ -72,12 +73,29 @@ namespace Flights.Controllers
             _logger = logger;
         }
 
+        
         [HttpGet]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(typeof(IEnumerable<FlightRm>), 200)]
         public IEnumerable<FlightRm> Search()
                 => flights;
 
+
+        [ProducesResponseType(404)]
         [HttpGet("{id}")]
-        public FlightRm Find (Guid id) 
-            => flights.SingleOrDefault(f => f.Id == id);
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(typeof(FlightRm), 200)]
+        public ActionResult <FlightRm> Find (Guid id)
+        {
+            var flight = flights.SingleOrDefault(f => f.Id == id);
+
+            if (flight == null)
+                return NotFound();
+
+            return Ok(flight);
+        }
+            
     }
 }
